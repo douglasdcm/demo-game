@@ -4,6 +4,7 @@ To execute any of the demos:
 ```
 python3.11 -m venv venv
 source venv/bin/activate
+pip install pygame
 # cd to a folder, for example 001
 cd ./001 # can be any folder
 python main.py
