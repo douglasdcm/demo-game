@@ -189,6 +189,11 @@ def main():
     elapsed_time = 0
 
     while app.run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                app.run = False
+                break
+
         clock.tick(60)
         elapsed_time = time.time() - start_time
         app.star_count += clock.tick(60)
@@ -201,14 +206,9 @@ def main():
             app.star_add_increment = max(200, app.star_add_increment - 50)
             app.star_count = 0
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                app.run = False
-                break
+        __generate_stars(app, stars, player_rect)
 
         player.move(player_rect)
-
-        __generate_stars(app, stars, player_rect)
 
         if app.hit:
             app.lose()
