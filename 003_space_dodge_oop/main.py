@@ -9,8 +9,7 @@ PLAYER_WIDTH = 40
 PLAYER_HEIGHT = 60
 PLAYER_VEL = 5
 
-STAR_WIDHT = 10
-STAR_HEIGHT = 20
+
 FONT = pygame.font.SysFont("comicsans", 30)
 CONCURRENT_STARS = 3
 
@@ -18,13 +17,13 @@ pygame.display.set_caption("Space Dodge")
 
 
 def __generate_stars(app, stars, player):
-    STAR_VEL = 10
-
     for star in stars[:]:
-        star.y += STAR_VEL
-        if star.y > app.height:
+        star_rect = star.rect()
+        if star_rect.y > app.height:
             stars.remove(star)
-        elif star.y + star.height >= player.y and star.colliderect(player):
+        elif star_rect.y + star_rect.height >= player.y and star_rect.colliderect(
+            player
+        ):
             stars.remove(star)
             app.hit = True
             break
@@ -98,7 +97,7 @@ class App:
         pygame.draw.rect(self._win, "blue", player)
 
         for star in stars:
-            pygame.draw.rect(self._win, "white", star)
+            pygame.draw.rect(self._win, "white", star.rect())
 
         pygame.display.flip()
 
@@ -123,27 +122,58 @@ class App:
 
 
 class Player:
-    def body(self, app):
-        return pygame.Rect(200, app.height - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT)
+    def __init__(self, app) -> None:
+        self._app = app
 
-    def move_left(self):
-        pass
+    def rect(self):
+        return pygame.Rect(
+            200, self._app.height - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT
+        )
+
+    def move(self, player_rect):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and player_rect.x - PLAYER_VEL >= 0:
+            player_rect.x -= PLAYER_VEL
+
+        if (
+            keys[pygame.K_RIGHT]
+            and player_rect.x + PLAYER_VEL + player_rect.width <= self._app.width
+        ):
+            player_rect.x += PLAYER_VEL
 
 
 class Star:
     def __init__(self, app) -> None:
         self._app = app
+        self._STAR_WIDHT = 10
+        self._STAR_HEIGHT = 20
+        self._STAR_VEL = 5
+        self._x = random.randint(0, self._app.width - self._STAR_WIDHT)
+        self._y = 0
 
     @property
     def x(self):
-        return random.randint(0, self._app.width - STAR_WIDHT)
+        return self._x
 
     @property
     def y(self):
-        pass
+        self._y += self.velocity
+        return self._y
 
-    def body(self):
-        return pygame.Rect(self.x, -STAR_HEIGHT, STAR_WIDHT, STAR_HEIGHT)
+    @property
+    def width(self):
+        return self._STAR_WIDHT
+
+    @property
+    def height(self):
+        return self._STAR_HEIGHT
+
+    @property
+    def velocity(self):
+        return self._STAR_VEL
+
+    def rect(self):
+        return pygame.Rect(self.x, self.y, self._STAR_WIDHT, self._STAR_HEIGHT)
 
 
 def main():
@@ -151,7 +181,8 @@ def main():
 
     stars = []
 
-    player = Player().body(app)
+    player = Player(app)
+    player_rect = player.rect()
 
     clock = pygame.time.Clock()
     start_time = time.time()
@@ -164,7 +195,7 @@ def main():
 
         if app.star_count > app.star_add_increment:
             for _ in range(CONCURRENT_STARS):
-                star = Star(app).body()
+                star = Star(app)
                 stars.append(star)
 
             app.star_add_increment = max(200, app.star_add_increment - 50)
@@ -175,20 +206,15 @@ def main():
                 app.run = False
                 break
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player.x - PLAYER_VEL >= 0:
-            player.x -= PLAYER_VEL
+        player.move(player_rect)
 
-        if keys[pygame.K_RIGHT] and player.x + PLAYER_VEL + player.width <= app.width:
-            player.x += PLAYER_VEL
-
-        __generate_stars(app, stars, player)
+        __generate_stars(app, stars, player_rect)
 
         if app.hit:
             app.lose()
             break
 
-        app.draw(player, stars, elapsed_time)
+        app.draw(player_rect, stars, elapsed_time)
 
     app.quit()
 
