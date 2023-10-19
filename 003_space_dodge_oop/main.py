@@ -173,6 +173,9 @@ class Star:
         return self._STAR_VEL
 
     def rect(self):
+        # image = pygame.image.load("01_image.png")
+        # image.set_colorkey((255, 0, 255))
+        # self._app.win.blit(image, (self.x, self.y))
         return pygame.Rect(self.x, self.y, self._STAR_WIDHT, self._STAR_HEIGHT)
 
 
