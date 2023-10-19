@@ -2,6 +2,8 @@ import pygame
 import time
 import random
 
+pygame.init()
+
 WIDTH, HEIGHT = 800, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -12,6 +14,7 @@ PLAYER_VEL = 5
 STAR_WIDHT = 10
 STAR_HEIGHT = 20
 STAR_VEL = 5
+FONT = pygame.font.SysFont("comicsans", 30)
 pygame.display.set_caption("Space Dodge")
 
 
@@ -72,6 +75,19 @@ def main():
                 stars.remove(star)
                 hit = True
                 break
+
+        if hit:
+            lost_text = FONT.render("You lost!", 1, "white")
+            WIN.blit(
+                lost_text,
+                (
+                    WIDTH / 2 - lost_text.get_width() / 2,
+                    HEIGHT / 2 - lost_text.get_height() / 2,
+                ),
+            )
+            pygame.display.update()
+            pygame.time.delay(4000)
+            break
 
         draw(player, stars)
 
