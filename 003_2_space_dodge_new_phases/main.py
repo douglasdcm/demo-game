@@ -89,11 +89,12 @@ class App:
         time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
         self._win.blit(time_text, (10, 10))
 
-        rect = pygame.draw.rect(self._win, "black", player_rect)
-        player.draw(rect)
+        # rect = pygame.draw.rect(self._win, "black", player_rect)
+        player.draw(player_rect)
 
         for star in stars:
-            pygame.draw.rect(self._win, "white", star.rect())
+            # pygame.draw.rect(self._win, "white", star.rect())
+            star.rect()
 
         pygame.display.flip()
 
@@ -156,14 +157,14 @@ class Player:
 class Star:
     def __init__(self, app) -> None:
         self._app = app
-        self._WIDTH = 1
-        self._HEIGHT = 1
+        self._WIDTH = 20
+        self._HEIGHT = 20
         self._VELOCITY = 5
         self._x = random.randint(0, self._app.width - self._WIDTH)
         self._y = 0
         self._image = pygame.transform.scale(
             pygame.image.load("asteroid.png"),
-            (self._WIDTH * 20, self._HEIGHT * 20),
+            (self._WIDTH, self._HEIGHT),
         )
 
     @property
