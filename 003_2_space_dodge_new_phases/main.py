@@ -3,8 +3,14 @@ import time
 import random
 
 pygame.init()
-
 DEBUG = False
+
+CONCURRENT_STARS = 2
+MIN_STAR_INCREMENT = 500
+STAR_INERTIA = 1000
+STAR_ACELERATION = 0.01
+MIN_STAR_VELOCITY, MAX_STAR_VELOCITY = 10, 20
+
 
 FONT = pygame.font.SysFont("comicsans", 30)
 pygame.display.set_caption("Space Dodge")
@@ -165,7 +171,7 @@ class Star:
         self._app = app
         self._WIDTH = 20
         self._HEIGHT = 20
-        self._VELOCITY = 10
+        self._velocity = random.randint(MIN_STAR_VELOCITY, MAX_STAR_VELOCITY)
         self._x = random.randint(0, self._app.width - self._WIDTH)
         self._y = 0
         self._image = pygame.transform.scale(
@@ -191,7 +197,11 @@ class Star:
 
     @property
     def velocity(self):
-        return self._VELOCITY
+        return self._velocity
+
+    @velocity.setter
+    def velocity(self, value):
+        self._velocity = value
 
     def update_y(self):
         self._y += self.velocity
@@ -230,12 +240,14 @@ def main():
         app.star_count += clock.tick(60)
 
         if app.star_count > app.star_add_increment:
-            CONCURRENT_STARS = 3
             for _ in range(CONCURRENT_STARS):
                 star = Star(app)
+                star.velocity = star.velocity * (elapsed_time * STAR_ACELERATION)
                 stars.append(star)
 
-            app.star_add_increment = max(200, app.star_add_increment - 50)
+            app.star_add_increment = max(
+                MIN_STAR_INCREMENT, app.star_add_increment - STAR_INERTIA
+            )
             app.star_count = 0
 
         __generate_stars(app, stars, player)
