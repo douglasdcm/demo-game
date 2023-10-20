@@ -7,17 +7,23 @@ pygame.init()
 
 FONT = pygame.font.SysFont("comicsans", 30)
 CONCURRENT_STARS = 3
+DEBUG = False
 
 pygame.display.set_caption("Space Dodge")
 
 
-def __generate_stars(app, stars, player):
+def debug_with_rect(app, rect):
+    if DEBUG is True:
+        pygame.draw.rect(app.win, "blue", rect)
+
+
+def __generate_stars(app, stars, player_rect):
     for star in stars[:]:
         star_rect = star.rect()
         if star_rect.y > app.height:
             stars.remove(star)
-        elif star_rect.y + star_rect.height >= player.y and star_rect.colliderect(
-            player
+        elif star_rect.y + star_rect.height >= player_rect.y and star_rect.colliderect(
+            player_rect
         ):
             stars.remove(star)
             app.hit = True
@@ -83,13 +89,13 @@ class App:
     def run_loop(self):
         pass
 
-    def draw(self, player_rect, stars, elapsed_time, player):
+    def draw(self, stars, elapsed_time, player):
         self._win.blit(self._bdg_image, (0, 0))
 
         time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
         self._win.blit(time_text, (10, 10))
 
-        player.draw(player_rect)
+        player.draw()
 
         for star in stars:
             star.draw()
@@ -128,19 +134,22 @@ class Player:
             pygame.image.load("space-shuttle.png"),
             (self._WIDTH, self._HEIGHT),
         )
-
-    def rect(self):
-        return pygame.Rect(
+        self._rect = pygame.Rect(
             self._x,
             self._y,
             self._WIDTH,
             self._HEIGHT,
         )
 
-    def draw(self, rect):
-        self._app.win.blit(self._image, (rect.x, rect.y))
+    def rect(self):
+        return self._rect
 
-    def move(self, player_rect):
+    def draw(self):
+        debug_with_rect(self._app, self._rect)
+        self._app.win.blit(self._image, (self._rect.x, self._rect.y))
+
+    def move(self):
+        player_rect = self._rect
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] and player_rect.x - self._VELOCITY >= 0:
             player_rect.x -= self._VELOCITY
@@ -171,7 +180,6 @@ class Star:
 
     @property
     def y(self):
-        self._y += self.velocity
         return self._y
 
     @property
@@ -186,11 +194,16 @@ class Star:
     def velocity(self):
         return self._VELOCITY
 
+    def update_y(self):
+        self._y += self.velocity
+
     def rect(self):
+        self.update_y()
         return pygame.Rect(self.x, self.y, self._WIDTH, self._HEIGHT)
 
     def draw(self):
-        self._app.win.blit(self._image, (self.x - self._WIDTH / 2, self.y))
+        debug_with_rect(self._app, self.rect())
+        self._app.win.blit(self._image, (self._x, self._y))
 
 
 def main():
@@ -228,13 +241,13 @@ def main():
 
         __generate_stars(app, stars, player_rect)
 
-        player.move(player_rect)
+        player.move()
 
         if app.hit:
             app.lose()
             break
 
-        app.draw(player_rect, stars, elapsed_time, player)
+        app.draw(stars, elapsed_time, player)
 
     app.quit()
 
