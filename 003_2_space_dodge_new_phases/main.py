@@ -5,11 +5,6 @@ import random
 pygame.init()
 
 
-PLAYER_WIDTH = 40
-PLAYER_HEIGHT = 60
-PLAYER_VEL = 5
-
-
 FONT = pygame.font.SysFont("comicsans", 30)
 CONCURRENT_STARS = 3
 
@@ -88,13 +83,14 @@ class App:
     def run_loop(self):
         pass
 
-    def draw(self, player, stars, elapsed_time):
+    def draw(self, player_rect, stars, elapsed_time, player):
         self._win.blit(self._bdg_image, (0, 0))
 
         time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
         self._win.blit(time_text, (10, 10))
 
-        pygame.draw.rect(self._win, "blue", player)
+        rect = pygame.draw.rect(self._win, "black", player_rect)
+        player.draw(rect)
 
         for star in stars:
             pygame.draw.rect(self._win, "white", star.rect())
@@ -124,32 +120,51 @@ class App:
 class Player:
     def __init__(self, app) -> None:
         self._app = app
+        self._WIDTH = 40
+        self._HEIGHT = 60
+        self._VELOCITY = 5
+        self._x = 200
+        self._y = self._app.height - self._HEIGHT
+        self._image = pygame.transform.scale(
+            pygame.image.load("space-shuttle.png"),
+            (self._WIDTH, self._HEIGHT),
+        )
 
     def rect(self):
         return pygame.Rect(
-            200, self._app.height - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT
+            self._x,
+            self._y,
+            self._WIDTH,
+            self._HEIGHT,
         )
+
+    def draw(self, rect):
+        self._app.win.blit(self._image, (rect.x, rect.y))
 
     def move(self, player_rect):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player_rect.x - PLAYER_VEL >= 0:
-            player_rect.x -= PLAYER_VEL
+        if keys[pygame.K_LEFT] and player_rect.x - self._VELOCITY >= 0:
+            player_rect.x -= self._VELOCITY
 
         if (
             keys[pygame.K_RIGHT]
-            and player_rect.x + PLAYER_VEL + player_rect.width <= self._app.width
+            and player_rect.x + self._VELOCITY + player_rect.width <= self._app.width
         ):
-            player_rect.x += PLAYER_VEL
+            player_rect.x += self._VELOCITY
 
 
 class Star:
     def __init__(self, app) -> None:
         self._app = app
-        self._STAR_WIDHT = 10
-        self._STAR_HEIGHT = 20
-        self._STAR_VEL = 5
-        self._x = random.randint(0, self._app.width - self._STAR_WIDHT)
+        self._WIDTH = 1
+        self._HEIGHT = 1
+        self._VELOCITY = 5
+        self._x = random.randint(0, self._app.width - self._WIDTH)
         self._y = 0
+        self._image = pygame.transform.scale(
+            pygame.image.load("asteroid.png"),
+            (self._WIDTH * 20, self._HEIGHT * 20),
+        )
 
     @property
     def x(self):
@@ -162,21 +177,19 @@ class Star:
 
     @property
     def width(self):
-        return self._STAR_WIDHT
+        return self._WIDTH
 
     @property
     def height(self):
-        return self._STAR_HEIGHT
+        return self._HEIGHT
 
     @property
     def velocity(self):
-        return self._STAR_VEL
+        return self._VELOCITY
 
     def rect(self):
-        # image = pygame.image.load("01_image.png")
-        # image.set_colorkey((255, 0, 255))
-        # self._app.win.blit(image, (self.x, self.y))
-        return pygame.Rect(self.x, self.y, self._STAR_WIDHT, self._STAR_HEIGHT)
+        self._app.win.blit(self._image, (self.x - self._WIDTH / 2, self.y))
+        return pygame.Rect(self.x, self.y, self._WIDTH, self._HEIGHT)
 
 
 def main():
@@ -190,6 +203,9 @@ def main():
     clock = pygame.time.Clock()
     start_time = time.time()
     elapsed_time = 0
+
+    image = pygame.image.load("space-shuttle.png")
+    app.win.blit(image, (50, 50))
 
     while app.run:
         for event in pygame.event.get():
@@ -217,7 +233,7 @@ def main():
             app.lose()
             break
 
-        app.draw(player_rect, stars, elapsed_time)
+        app.draw(player_rect, stars, elapsed_time, player)
 
     app.quit()
 
