@@ -4,11 +4,9 @@ import random
 
 pygame.init()
 
-
-FONT = pygame.font.SysFont("comicsans", 30)
-CONCURRENT_STARS = 3
 DEBUG = False
 
+FONT = pygame.font.SysFont("comicsans", 30)
 pygame.display.set_caption("Space Dodge")
 
 
@@ -17,13 +15,14 @@ def debug_with_rect(app, rect):
         pygame.draw.rect(app.win, "blue", rect)
 
 
-def __generate_stars(app, stars, player_rect):
+def __generate_stars(app, stars, player):
     for star in stars[:]:
         star_rect = star.rect()
         if star_rect.y > app.height:
             stars.remove(star)
-        elif star_rect.y + star_rect.height >= player_rect.y and star_rect.colliderect(
-            player_rect
+        elif (
+            star_rect.y + star_rect.height >= player.rect().y
+            and star_rect.colliderect(player.rect())
         ):
             stars.remove(star)
             app.hit = True
@@ -212,7 +211,6 @@ def main():
     stars = []
 
     player = Player(app)
-    player_rect = player.rect()
 
     clock = pygame.time.Clock()
     start_time = time.time()
@@ -232,6 +230,7 @@ def main():
         app.star_count += clock.tick(60)
 
         if app.star_count > app.star_add_increment:
+            CONCURRENT_STARS = 3
             for _ in range(CONCURRENT_STARS):
                 star = Star(app)
                 stars.append(star)
@@ -239,7 +238,7 @@ def main():
             app.star_add_increment = max(200, app.star_add_increment - 50)
             app.star_count = 0
 
-        __generate_stars(app, stars, player_rect)
+        __generate_stars(app, stars, player)
 
         player.move()
 
