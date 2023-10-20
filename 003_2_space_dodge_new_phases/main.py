@@ -89,12 +89,10 @@ class App:
         time_text = FONT.render(f"Time: {round(elapsed_time)}s", 1, "white")
         self._win.blit(time_text, (10, 10))
 
-        # rect = pygame.draw.rect(self._win, "black", player_rect)
         player.draw(player_rect)
 
         for star in stars:
-            # pygame.draw.rect(self._win, "white", star.rect())
-            star.rect()
+            star.draw()
 
         pygame.display.flip()
 
@@ -159,7 +157,7 @@ class Star:
         self._app = app
         self._WIDTH = 20
         self._HEIGHT = 20
-        self._VELOCITY = 5
+        self._VELOCITY = 10
         self._x = random.randint(0, self._app.width - self._WIDTH)
         self._y = 0
         self._image = pygame.transform.scale(
@@ -189,8 +187,10 @@ class Star:
         return self._VELOCITY
 
     def rect(self):
-        self._app.win.blit(self._image, (self.x - self._WIDTH / 2, self.y))
         return pygame.Rect(self.x, self.y, self._WIDTH, self._HEIGHT)
+
+    def draw(self):
+        self._app.win.blit(self._image, (self.x - self._WIDTH / 2, self.y))
 
 
 def main():
