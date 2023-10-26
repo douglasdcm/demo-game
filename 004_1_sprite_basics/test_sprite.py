@@ -17,7 +17,7 @@ def test_obj1_ollides_many_objects_when_many_objects_in_group():
     object3.rect = rect1
     object4.rect = rect1
 
-    assert has_collided(object1, groupB) is True
+    assert has_collided(object1, groupB, dokill=1) is True
 
 
 def test_obj1_ollides_obj2_when_many_objects_in_group():
@@ -33,7 +33,7 @@ def test_obj1_ollides_obj2_when_many_objects_in_group():
     object2.rect = rect2
     object3.rect = rect1
 
-    assert has_collided(object1, groupB) is True
+    assert has_collided(object1, groupB, dokill=1) is True
 
 
 def test_obj1_not_collides_obj2_when_no_intersection():
@@ -47,7 +47,7 @@ def test_obj1_not_collides_obj2_when_no_intersection():
     object1.rect = rect1
     object2.rect = rect2
 
-    assert has_collided(object1, group2) is False
+    assert has_collided(object1, group2, dokill=1) is False
 
 
 def test_obj1_collides_obj2_when_has_the_same_rect():
@@ -60,7 +60,7 @@ def test_obj1_collides_obj2_when_has_the_same_rect():
     object1.rect = rect
     object2.rect = rect
 
-    assert has_collided(object1, group2) is True
+    assert has_collided(object1, group2, dokill=1) is True
 
 
 def test_obj1_collides_obj1():
@@ -69,4 +69,4 @@ def test_obj1_collides_obj1():
     rect = pygame.rect.Rect(0, 0, 1, 1)
     object1.rect = rect
 
-    assert has_collided(object1, group1) is True
+    assert has_collided(object1, group1, dokill=1) is True

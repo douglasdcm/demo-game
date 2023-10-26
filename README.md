@@ -9,3 +9,8 @@ pip install pygame
 cd ./001 # can be any folder
 python main.py
 ```
+
+# Functional games
+- 003_0: Star ship designed with basic rectangles
+- 003_2: Star ship drew with images
+- 004_2: Chase game drewn using Sprite
