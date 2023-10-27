@@ -17,13 +17,19 @@ ENEMIES_QUANTITY = 15
 ENEMIES_STEP = (10, 20)
 ENEMY_VELOCITY = 0.25
 
+HAPPY_FACE = "happy.png"
+SAD_FACE = "bad.png"
+PAIN_FACE = "pain.png"
+
+SCORE_RATE = 50
+
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, *groups) -> None:
         pygame.sprite.Sprite.__init__(self, *groups)
         self.rect = pygame.rect.Rect(0, 0, SQUARE_SIDE, SQUARE_SIDE)
         self.image = pygame.transform.scale(
-            pygame.image.load("sad-face.png"),
+            pygame.image.load(SAD_FACE),
             (self.rect.width, self.rect.height),
         )
         self.step_x = 10
@@ -47,7 +53,8 @@ class Character(pygame.sprite.Sprite):
         self.rect.y += self.step_y
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        # pygame.draw.rect(screen, self.color, self.rect)
+        self.image.set_colorkey((255, 255, 255))
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
@@ -97,7 +104,7 @@ def __setup_player():
         SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SQUARE_SIDE, SQUARE_SIDE
     )
     player.image = pygame.transform.scale(
-        pygame.image.load("happiness.png"),
+        pygame.image.load(HAPPY_FACE),
         (player.rect.width, player.rect.height),
     )
 
@@ -117,7 +124,7 @@ def __draw_statistics(FONT, screen, demage, elapsed_time):
 def __restore_player(player):
     player.color = "blue"
     player.image = pygame.transform.scale(
-        pygame.image.load("happiness.png"),
+        pygame.image.load(HAPPY_FACE),
         (player.rect.width, player.rect.height),
     )
 
@@ -125,14 +132,14 @@ def __restore_player(player):
 def __penalty(player, demage):
     player.color = "yellow"
     player.image = pygame.transform.scale(
-        pygame.image.load("pain.png"),
+        pygame.image.load(PAIN_FACE),
         (player.rect.width, player.rect.height),
     )
 
 
 def __quit(FONT, screen, demage, elapsed_time):
     score_text = FONT.render(
-        f"Score: {round(elapsed_time) - round(demage/10)}", 1, "green"
+        f"Score: {round(elapsed_time) - round(demage/SCORE_RATE)}", 1, "green"
     )
     screen.blit(
         score_text,
