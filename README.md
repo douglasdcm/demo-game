@@ -15,3 +15,4 @@ python main.py
 - 003_2: Star ship drew with images
 - 004_2: Chase game drewn using Sprite
 - 005: Boxe game
+- 006: Climb a build jumping

@@ -81,6 +81,8 @@ def __draw_instructions(FONT, screen):
 
 def main():
     pygame.init()
+    pygame.display.set_caption("Boxe")
+
     FONT = pygame.font.SysFont("comicsans", 30)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     start = False
