@@ -1,9 +1,11 @@
 import pygame
+import pickle
 
 BUTTON_WIDTH = 50
 BUTTON_HEIGHT = 50
 MARGIN = 10
 DEFAULT_BUTTON_COLOR = "gray"
+FILE_TO_SAVE = "picture.txt"
 
 
 class Button(pygame.sprite.Sprite):
@@ -152,9 +154,17 @@ class Canvas:
         self.action_reset()
 
     def dump_to_file(self):
-        with open("picture.txt", "w") as f:
-            for shape in self.__shapes:
-                f.write(f"{shape}\n")
+        with open(FILE_TO_SAVE, "wb") as f:
+            pickle.dump(self.__shapes, f, pickle.HIGHEST_PROTOCOL)
+
+    def load_file(self):
+        content = None
+        with open(FILE_TO_SAVE, "rb") as f:
+            try:
+                content = pickle.load(f)
+            except EOFError:
+                pass
+        self.__shapes = content
 
     def handle_actions(self):
         if self.current_action == "rect" and len(self.mouse_positions) == 2:

@@ -4,6 +4,7 @@ from classes import Canvas
 
 def main():
     canvas = Canvas()
+    canvas.load_file()
     running = True
     while running:
         for event in pygame.event.get():
