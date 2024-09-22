@@ -10,11 +10,14 @@ class GameTemplate:
         self.ypos = 50
         self.step_x = 10
         self.step_y = 10
+        self.screen = None
+        self.bdg_image = None
+        self.image = None
+
+    def initialize(self):
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.bdg_image = pygame.image.load("background.png")
         self.image = pygame.image.load("01_image.png")
-
-    def initialize(self):
         pygame.init()
         logo = pygame.image.load("logo32x32.png")
         pygame.display.set_icon(logo)
@@ -61,6 +64,7 @@ class Game(GameTemplate):
 
         self.xpos += self.step_x
         self.ypos += self.step_y
+        return self.xpos, self.ypos
 
     def render(self):
         self.screen.blit(self.bdg_image, (0, 0))
